@@ -1,94 +1,132 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useItemStore } from '../store/useItemStore'
+import { api } from "../api/api"
 import Input from './Input'
 
 const CreateItem = () => {
-    const handleSubmit = () => {}
+    const [error, setError] = useState('')
+    const navigate = useNavigate()
+    const getItems = useItemStore((state) => state.getItems)
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setError('')
+
+        const title = e.target.title?.value
+        const description = e.target.description?.value
+        const price = e.target.price?.value
+        const imageUrl = e.target.imageUrl?.value
+
+        if (!title || !description || !price) {
+            setError('Заполните все обязательные поля')
+            return
+        }
+
+        const item = {
+            title: title,
+            description: description,
+            price: Number(price),
+        }
+
+        if (imageUrl) {
+            item.imageUrl = imageUrl
+        }
+
+        try {
+            await api.sendItems(item)
+            await getItems()
+            navigate('/')
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || error.message || 'Произошла ошибка при создании товара'
+            setError(errorMessage)
+        }
+    }
+
     return (
         <div className="container">
-            <div class="page-header">
+            <div className="page-header">
                 <h1>Создать новый товар</h1>
             </div>
 
-            <div class="form-container">
+            <div className="form-container">
                 <form id="create-item-form" onSubmit={handleSubmit}>
-                    <div class="form-group">
-                        <label class="form-label">
-                            Название товара <span class="required">*</span>
+                    {error && <div className="alert alert-error active">{error}</div>}
+
+                    <div className="form-group">
+                        <label className="form-label">
+                            Название товара <span className="required">*</span>
                         </label>
                         <Input
                             type="text"
-                            class="form-input"
+                            className="form-input"
                             name="title"
                             placeholder="Например: iPhone 14 Pro 256GB"
-                            maxlength="100"
+                            maxLength="100"
                             required
                         />
-                        <div class="char-counter">
-                            <span class="current">0</span> / 100
+                        <div className="char-counter">
+                            <span className="current">0</span> / 100
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">
-                            Описание <span class="required">*</span>
+                    <div className="form-group">
+                        <label className="form-label">
+                            Описание <span className="required">*</span>
                         </label>
                         <textarea
-                            class="form-textarea"
+                            className="form-textarea"
                             name="description"
-                            placeholder="Подробно опишите товар, его состояние, характеристики..."
-                            maxlength="1000"
+                            placeholder="Подробно опишите товар..."
+                            maxLength="1000"
                             required></textarea>
-                        <div class="char-counter">
-                            <span class="current">0</span> / 1000
+                        <div className="char-counter">
+                            <span className="current">0</span> / 1000
                         </div>
-                        <div class="form-hint">
-                            Чем подробнее описание, тем больше шансов продать
-                            товар
+                        <div className="form-hint">
+                            Чем подробнее описание, тем больше шансов продать товар
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">
-                            Начальная цена <span class="required">*</span>
+                    <div className="form-group">
+                        <label className="form-label">
+                            Начальная цена <span className="required">*</span>
                         </label>
-                        <div class="input-group">
+                        <div className="input-group">
                             <Input
                                 type="number"
-                                class="form-input with-prefix"
+                                className="form-input with-prefix"
                                 name="price"
                                 placeholder="5000"
                                 min="1"
                                 step="100"
                                 required
                             />
-                            <span class="input-prefix">₽</span>
+                            <span className="input-prefix">₽</span>
                         </div>
-                        <div class="form-hint">
+                        <div className="form-hint">
                             Укажите минимальную цену, с которой начнутся торги
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">URL изображения</label>
+                    <div className="form-group">
+                        <label className="form-label">URL изображения</label>
                         <Input
                             type="url"
-                            class="form-input"
+                            className="form-input"
                             name="imageUrl"
                             placeholder="https://example.com/image.jpg"
                         />
-                        <div class="form-hint">
+                        <div className="form-hint">
                             Вставьте ссылку на изображение товара (опционально)
-                        </div>
-                        <div class="image-preview" id="image-preview">
-                            <img src="" alt="Предпросмотр" />
                         </div>
                     </div>
 
-                    <div class="form-actions">
-                        <Link href="/" class="btn-cancel">
+                    <div className="form-actions">
+                        <Link to="/" className="btn-cancel">
                             Отмена
                         </Link>
-                        <button type="submit" class="btn-submit">
+                        <button type="submit" className="btn-submit">
                             Создать товар
                         </button>
                     </div>
