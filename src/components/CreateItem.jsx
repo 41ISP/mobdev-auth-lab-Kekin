@@ -1,8 +1,38 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import {useItemStore} from '../store/useItemStore'
+import { api } from "../api/api"
 import Input from './Input'
 
 const CreateItem = () => {
-    const handleSubmit = () => {}
+    const [error, setError] = useState('')
+    const navigate = useNavigate()
+    const getItems = useItemStore((state) => state.getItems)
+
+    const handleSubmit = async(e) => {
+        e.preventDefault()
+        setError('')
+
+        const item = {
+            title: e.target.title.value,
+            desctiption: e.target.desctiption.value,
+            price: Number(e.target.price.value),
+        }
+
+        if (e.target.imageUrl.value) {
+            item.imageUrl = e.target.imageUrl.value
+        }
+
+        try {
+            await api.sendItems(item)
+            await getItems()
+            navigate('/')
+        }catch (error) {
+            const errorMessage = error.response?.data?.message || error.message || 'Произошла ошибка при создании товара'
+            setError(errorMessage)
+        }
+    }
+
     return (
         <div className="container">
             <div class="page-header">

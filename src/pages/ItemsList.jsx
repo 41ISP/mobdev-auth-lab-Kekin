@@ -1,7 +1,26 @@
 import ItemCard from '../components/ItemCard'
+import { useEffect, useState } from 'react'
+import { useItemStore } from '../store/useItemStore'
+import { useUserStore } from '../store/useUserStore'
+import { api } from "../api/api"
 
 const ItemsList = () => {
-    const items = []
+    const {items, getItems} = useItemStore()
+    const [stats, setStats] = useState(null)
+
+    useEffect(() => {
+        getItems()
+        const fetchStats = async () => {
+            try {
+                const data = await api.getStatus()
+                setStats(data)
+            }catch (error) {
+                console.log('Ошибка при загрузке статистики:', error)
+            }
+        }
+
+        fetchStats()
+    }, [getItems])
 
     return (
         <div className="container">
@@ -10,20 +29,16 @@ const ItemsList = () => {
             </div>
             <div class="stats">
                 <div class="stat-item">
-                    <span class="stat-value">0</span>
-                    <span class="stat-label">Товаров</span>
+                    <span>Товаров: {stats?.totalItems ?? 0}</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">0</span>
-                    <span class="stat-label">Ставок</span>
+                    <span>Ставок: {stats?.totalBids ?? 0}</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">0</span>
-                    <span class="stat-label">Активных</span>
+                   <span>Активных: {stats?.totalactiveItems ?? 0}</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">0₽</span>
-                    <span class="stat-label">Средняя цена</span>
+                  <span>Средняя цена: {stats?.averageItemPrice ?? 0}</span>
                 </div>
             </div>
 

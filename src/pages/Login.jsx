@@ -2,25 +2,39 @@ import { Link } from "react-router-dom"
 import Button from "../components/Button"
 import Input from "../components/Input"
 import { useState } from "react"
+import {api} from "../api/api"
+import { useUserStore } from "../store/useUserStore";
 
 const Login = () => {
     const [error, setError] = useState("")
-    const handleSubmit = () => {}
+    const [username, setUsername] = useState("")
+    const [password, serUSerpassword] = useState("")
+    const setSession = useUserStore((state) => state.setSession)
+    const navigate = useNavigate()
 
-    return (
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setError('')
+
+        const user = {username, password}
+        try {
+            const session = await api.loginUser(user)
+            setSession(session)
+            navigate('/')
+        }catch (error) {
+            setError(error.message || 'Ощибка при входе')
+        }
+    }
+
+     return (
         <div className="container">
             <div class="auth-container">
-                {error.length > 0 && <div className="auth-error">{error}</div>}
+                {error && <div className="alert alert-error active">{error}</div>}
                 <div class="auth-header">
                     <div class="auth-icon">🔐</div>
                     <h1 class="auth-title">Вход</h1>
                     <p class="auth-subtitle">Войдите в свой аккаунт</p>
                 </div>
-
-                <div class="alert alert-error" id="error-alert">
-                    Неверное имя пользователя или пароль
-                </div>
-
                 <form id="login-form" onSubmit={handleSubmit}>
                     <div class="form-group">
                         <label class="form-label">Имя пользователя</label>

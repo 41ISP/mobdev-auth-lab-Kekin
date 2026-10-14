@@ -1,26 +1,46 @@
-import { useState } from 'react'
-import Button from '../components/Button'
-import Input from '../components/Input'
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom"
+import Button from "../components/Button"
+import Input from "../components/Input"
+import { useState } from "react"
+import { api } from "../api/api"
+import { useUserStore } from "../store/useUserStore"
 
 const Register = () => {
-    const [error, setError] = useState('')
+   const [error, setError] = useState("")
+    const [username, setUsername] = useState("")
+    const [password, serUSerpassword] = useState("")
+    const [password2, serUSerpassword2] = useState("")
+    const setSession = useUserStore((state) => state.setSession)
+    const navigate = useNavigate()
 
-    const handleSubmit = (e) => {}
+    const handleSubmit = async(e) => {
+        e.preventDefault()
+        setError('')
 
-    return (
+        if (password !== password2) {
+            setError('Пароли не совпадают')
+            return
+        }
+        const user = { username, email, password,}
+        if (email) { user.email = email}
+      try {
+            const session = await api.loginUser(user)
+            setSession(session)
+            navigate('/')
+        } catch (error) {
+            setError(error.message || 'Ошибка при регистрации')
+        } 
+    }
+
+     return (
         <div className="container">
             <div class="auth-container">
+                {error && <div className="alert alert-error active">{error}</div>}
                 <div class="auth-header">
                     <div class="auth-icon">👤</div>
                     <h1 class="auth-title">Регистрация</h1>
                     <p class="auth-subtitle">Создайте новый аккаунт</p>
                 </div>
-
-                <div class="alert alert-error" id="error-alert">
-                    Такое имя пользователя уже занято
-                </div>
-                {error.length > 0 && <div className="auth-error">{error}</div>}
                 <form id="register-form" onSubmit={handleSubmit}>
                     <div class="form-group">
                         <label class="form-label">Имя пользователя</label>
@@ -92,9 +112,7 @@ const Register = () => {
                         Зарегистрироваться
                     </Button>
                 </form>
-
                 <div class="auth-divider">или</div>
-
                 <div class="auth-link">
                     <p>
                         <Link to={'/login'}>Войти</Link>

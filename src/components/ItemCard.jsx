@@ -1,4 +1,7 @@
+import {Link} from "react-router-dom"
+
 const ItemCard = ({
+    id,
     status,
     title,
     description,
@@ -8,7 +11,11 @@ const ItemCard = ({
     highestBid,
     imageUrl,
 }) => {
-    return (
+
+ return (
+    <Link 
+    to={`/item/${id}`}
+    style={{textDexoration: 'none', color:'inherit'}}>
         <div className="item-card">
             <img src={imageUrl} class="item-image" />
             <div class="item-content">
@@ -29,6 +36,7 @@ const ItemCard = ({
                 </div>
             </div>
         </div>
+    </Link>
     )
 }
 
