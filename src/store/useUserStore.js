@@ -8,7 +8,7 @@ export const useUserStore = create()(
         setSession: (session) => set({ session }),
     }),
         {
-            name: "user-store",
+            name: "user-storage",
             storage: createJSONStorage(() => localStorage),
         },
     ),

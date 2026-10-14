@@ -58,7 +58,7 @@ export const deleteItems = async(id) => {
 }
 
 export const createBid = async({id, amount}) => {
-    const res = await apiInstance.post('/items/${id}/bids', {amount})
+    const res = await apiInstance.post(`/items/${id}/bids`, {amount})
     return res.data
 }
 
