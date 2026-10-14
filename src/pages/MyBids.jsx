@@ -1,8 +1,28 @@
+import { useState, useEffect } from "react"
+import {Link } from "react-router-dom"
+import { api } from "../api/api"
 
 const MyBids = () => {
+
+    const [bids, setBids] = useState([])
+
+    useEffect(() => {
+        const fetchBids = async() => {
+            try {
+                const data = await api.getMyBids()
+                setBids(data)
+            }catch (error){
+                console.error('Ошибка при загрузке  моих ставко:', error)
+            }
+        }
+        fetchBids()
+    }, [])
+
+    const winningCount = bids.filter((bid) => bid.isWinning).length
+    const totalAmout = bids.reduce((sum, bid) => sum + bid.amount, 0)
+
     return (
         <div className="container">
-
             <div class="page-header">
                 <h1>Мои ставки</h1>
                 <p class="page-subtitle">История ваших ставок на товары</p>
@@ -23,101 +43,43 @@ const MyBids = () => {
                 </div>
             </div>
 
-            <div class="bids-list">
-                <div class="bid-item winning">
-                    <img src="https://via.placeholder.com/80x80/3498db/ffffff?text=Laptop" alt="Ноутбук" class="bid-item-image"/>
-                    <div class="bid-item-content">
-                        <div class="bid-item-header">
-                            <a href="/items/1" class="bid-item-title">Ноутбук Dell XPS 15</a>
-                            <span class="winning-badge">🏆 Лидирую</span>
-                        </div>
-                        <div class="bid-item-meta">
-                            <span>⏰ 2 часа назад</span>
-                            <span>💰 Начальная: 65 000 ₽</span>
-                        </div>
-                    </div>
-                    <div class="bid-item-amount">
-                        <span class="bid-amount">70 000 ₽</span>
-                        <span class="bid-status">Моя ставка</span>
-                    </div>
-                </div>
+            <div className="bids-list">
+                {bids.map((bid) => (
+                    <div 
+                    key= {bid.id}
+                    className={`bid-item ${bid.isWinning ? 'bid-item-winning' : ''}`}>
 
-                <div class="bid-item">
-                    <img src="https://via.placeholder.com/80x80/e74c3c/ffffff?text=iPhone" alt="iPhone" class="bid-item-image"/>
                     <div class="bid-item-content">
                         <div class="bid-item-header">
-                            <a href="/items/2" class="bid-item-title">iPhone 14 Pro 256GB</a>
-                            <span class="outbid-badge">Перебита</span>
+                            <Link to={`/items/${bid.itemId}`} class="bid-item-title">
+                             {bid-item-title}
+                            </Link>
+                            {bid.isWinning ? (
+                                 <span class="winning-badge">🏆 Лидирую</span>
+                            ) : (
+                                 <span class="outbid-badge">Перебита</span>
+                            )}
                         </div>
                         <div class="bid-item-meta">
-                            <span>⏰ 1 день назад</span>
-                            <span>💰 Начальная: 85 000 ₽</span>
+                            <span>
+                                {new Date(bid.createAt).toLocaleString('ru-RU', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                })}
+                            </span>
+                            <span>💰 {bid.amount} ₽</span>
                         </div>
                     </div>
-                    <div class="bid-item-amount">
-                        <span class="bid-amount">88 000 ₽</span>
-                        <span class="bid-status">Моя ставка</span>
-                        <div class="current-highest">Текущая: 90 000 ₽</div>
-                    </div>
-                </div>
 
-                <div class="bid-item winning">
-                    <img src="https://via.placeholder.com/80x80/f39c12/ffffff?text=Watch" alt="Apple Watch" class="bid-item-image"/>
-                    <div class="bid-item-content">
-                        <div class="bid-item-header">
-                            <a href="/items/5" class="bid-item-title">Apple Watch Series 8</a>
-                            <span class="winning-badge">🏆 Лидирую</span>
-                        </div>
-                        <div class="bid-item-meta">
-                            <span>⏰ 3 часа назад</span>
-                            <span>💰 Начальная: 35 000 ₽</span>
-                        </div>
-                    </div>
                     <div class="bid-item-amount">
-                        <span class="bid-amount">37 000 ₽</span>
+                        <span class="bid-amount">{bid.amount} ₽</span>
                         <span class="bid-status">Моя ставка</span>
                     </div>
                 </div>
-
-                <div class="bid-item winning">
-                    <img src="https://via.placeholder.com/80x80/1abc9c/ffffff?text=Camera" alt="Камера" class="bid-item-image"/>
-                    <div class="bid-item-content">
-                        <div class="bid-item-header">
-                            <a href="/items/6" class="bid-item-title">Canon EOS R6</a>
-                            <span class="winning-badge">🏆 Лидирую</span>
-                        </div>
-                        <div class="bid-item-meta">
-                            <span>⏰ 5 часов назад</span>
-                            <span>💰 Начальная: 150 000 ₽</span>
-                        </div>
-                    </div>
-                    <div class="bid-item-amount">
-                        <span class="bid-amount">155 000 ₽</span>
-                        <span class="bid-status">Моя ставка</span>
-                    </div>
-                </div>
-
-                <div class="bid-item">
-                    <img src="https://via.placeholder.com/80x80/9b59b6/ffffff?text=Headphones" alt="Наушники" class="bid-item-image"/>
-                    <div class="bid-item-content">
-                        <div class="bid-item-header">
-                            <a href="/items/4" class="bid-item-title">Sony WH-1000XM5</a>
-                            <span class="outbid-badge">Перебита</span>
-                        </div>
-                        <div class="bid-item-meta">
-                            <span>⏰ 2 дня назад</span>
-                            <span>💰 Начальная: 25 000 ₽</span>
-                        </div>
-                    </div>
-                    <div class="bid-item-amount">
-                        <span class="bid-amount">26 000 ₽</span>
-                        <span class="bid-status">Моя ставка</span>
-                        <div class="current-highest">Текущая: 27 000 ₽</div>
-                    </div>
-                </div>
+                ))}
             </div>
-
-
         </div>
     )
 }

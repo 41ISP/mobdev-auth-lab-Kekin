@@ -35,7 +35,7 @@ const NavBar = () => {
                                     </li>) 
                                     </>   
                                 )}
-                    </ul>
+                       </ul>
                 </nav>
             </header>
         </div>
